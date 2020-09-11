@@ -3,65 +3,74 @@
 // help confirmes whether logic file is being accessed
 console.log("working");
 
-// create a map object with a center and zoom level
 
-// let testmap = L.map('leafmap').setview([40.7,-94.5],4);
-
-// alternate way to create map box: zoom in LA
+// alternate way to create map box: zoom in LAX
 let testmap = L.map("leafmap", {
     center: [
-        41.0023,-102.0537
+        37.61, -122.375
     ],
-    zoom: 5
+    zoom: 12
 });
 
+// Add GeoJSON data: SFO
+let sanFranAirport =
+{"type":"FeatureCollection","features":[{
+    "type":"Feature",
+    "properties":{
+        "id":"3469",
+        "name":"San Francisco International Airport",
+        "city":"San Francisco",
+        "country":"United States",
+        "faa":"SFO",
+        "icao":"KSFO",
+        "alt":"13",
+        "tz-offset":"-8",
+        "dst":"A",
+        "tz":"America/Los_Angeles"},
+        "geometry":{
+            "type":"Point",
+            "coordinates":[-122.375,37.61899948120117]}}
+]};
 
 
-//coordinates for each point for multiple lines in an array
-// let line1 = [
-//     [33.9416, -118.4085], //sfo
-//     [37.6213, -122.3790], //lax
-//     [40.7899, -111.9791], //slc
-//     [47.4502, -122.3088] //sea
-// ];
+// add popups for features using onEachFeature() function
+L.geoJSON(sanFranAirport, {
+    onEachFeature: function(feature, layer) {
+        console.log(layer);
+        layer.bindPopup("<h3> Airport Code: " + feature.properties.faa + "</h3> <hr> <h3> Airport Name: " + feature.properties.name + "</h3>");
+    }
 
-// //polyline() to make a red line from LAX to SFO
-// L.polyline(
-//     line1, {
-//         color:"yellow"
+
+
+
+}).addTo(testmap);
+
+
+
+
+
+
+
+
+
+// // geojson data acquired
+// // add marker using pointToLayer() function and add data to popup marker
+// L.geoJSON(sanFranAirport, {
+//     //turning each feature into a marker on map
+//     pointToLayer: function(feature, latlng) {
+//         console.log(feature);
+//         return L.marker(latlng)
+//         .bindPopup("<h2>" + feature.properties.name + "</h2> <hr> <h3>" + feature.properties.city + ", " +feature.properties.country)
 //     }
-// ).addTo(testmap);
-
-//skill drill sfo 2 jfk with some stops
-
-// edit your logic.js to create an airline route from SFO to John F.
-//  Kennedy International Airport (JFK) with two stops, Austin-Bergstrom 
-//  International Airport (AUS) and Toronto Pearson International Airport (YYZ).
-//   Make the route a blue dashed   line, with a weight of 4 and opacity of 0.5 on the light map.
+// }).addTo(testmap);
 
 
 
-let line2 = [
-    [37.6213, -122.3790],//sfo
-    [38.6906, -121.5878],//sac
-    [30.1899, -97.6686],//aus
-    [43.6766, -79.6305],//yyz
-    [40.6397, -73.7788],//jfk
-];
-
-L.polyline(
-    line2, {
-        color: "blue",
-        weight: 4,
-        opacity: 0.5,
-        dashArray: "20,20"
-    }   
-).addTo(testmap);
 
 
 // tile layer method: street level edition
 // create tile layer that will be the map background
-let streets = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/{z}/{x}/{y}?access_token={accessToken}', { //map box styles api: street level tiles
+let streets = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/navigation-preview-night-v2/tiles/{z}/{x}/{y}?access_token={accessToken}', { //map box styles api: street level tiles
 
     attribution: 'Map data © <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery (c) <a href="https://www.mapbox.com/">Mapbox</a>',
     
@@ -72,15 +81,6 @@ let streets = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v10/til
 
 // Then add 'graymap' tile layer to the map.
 streets.addTo(testmap);
-
-
-
-
-
-
-
-
-
 
 
 
@@ -108,6 +108,9 @@ streets.addTo(testmap);
 // ).addTo(testmap);
 
 
+
+
+
 // An array containing each city's location, state, and population.
 // let cityData = cities;
 
@@ -123,6 +126,9 @@ streets.addTo(testmap);
 // });
 
 
+
+
+
 // multiple points with radius marker proportional to population 
 // cityData.forEach(function(city){
 //     console.log(city);
@@ -133,7 +139,6 @@ streets.addTo(testmap);
 //     .addTo(testmap);
 
 // });
-
 
 // multiple points with radius marker proportional to population: dark edition (skilldrill)
 // cityData.forEach(function(city){
@@ -147,3 +152,40 @@ streets.addTo(testmap);
 //     .addTo(testmap);
 
 // });
+
+
+
+
+
+//coordinates for each point for multiple lines in an array
+// let line1 = [
+//     [33.9416, -118.4085], //sfo
+//     [37.6213, -122.3790], //lax
+//     [40.7899, -111.9791], //slc
+//     [47.4502, -122.3088] //sea
+// ];
+
+// //polyline() to make a red line from LAX to SFO
+// L.polyline(
+//     line1, {
+//         color:"yellow"
+//     }
+// ).addTo(testmap);
+
+// //skill drill sfo 2 jfk with some stops
+// let line2 = [
+//     [37.6213, -122.3790],//sfo
+//     [38.6906, -121.5878],//sac
+//     [30.1899, -97.6686],//aus
+//     [43.6766, -79.6305],//yyz
+//     [40.6397, -73.7788],//jfk
+// ];
+
+// L.polyline(
+//     line2, {
+//         color: "blue",
+//         weight: 4,
+//         opacity: 0.5,
+//         dashArray: "20,20"
+//     }   
+// ).addTo(testmap);
