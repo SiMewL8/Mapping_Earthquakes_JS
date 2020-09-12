@@ -3,74 +3,24 @@
 // help confirmes whether logic file is being accessed
 console.log("working");
 
-
-// alternate way to create map box: zoom in LAX
-let testmap = L.map("leafmap", {
-    center: [
-        37.61, -122.375
-    ],
-    zoom: 12
-});
-
-// Add GeoJSON data: SFO
-let sanFranAirport =
-{"type":"FeatureCollection","features":[{
-    "type":"Feature",
-    "properties":{
-        "id":"3469",
-        "name":"San Francisco International Airport",
-        "city":"San Francisco",
-        "country":"United States",
-        "faa":"SFO",
-        "icao":"KSFO",
-        "alt":"13",
-        "tz-offset":"-8",
-        "dst":"A",
-        "tz":"America/Los_Angeles"},
-        "geometry":{
-            "type":"Point",
-            "coordinates":[-122.375,37.61899948120117]}}
-]};
+// accessing airport geojson url
+let airportData = "https://raw.githubusercontent.com/SiMewL8/Mapping_Earthquakes_JS/Mapping_GeoJSON_Points/majorAirports.json";
 
 
-// add popups for features using onEachFeature() function
-L.geoJSON(sanFranAirport, {
-    onEachFeature: function(feature, layer) {
-        console.log(layer);
-        layer.bindPopup("<h3> Airport Code: " + feature.properties.faa + "</h3> <hr> <h3> Airport Name: " + feature.properties.name + "</h3>");
+var airportPopups = d3.json(airportData).then(function(collect) {
+    console.log(collect);
+    L.geoJson(collect, {
+                pointToLayer: function(feature, props) { //pointToLayer() features and properties
+                            console.log(feature);
+                            return L.marker(props)
+                            .bindPopup("<h3> Airport Code: " + feature.properties.faa + "</h3> <hr> <h3> Airport Name: " + feature.properties.name)
+                        }
+                    }).addTo(testmap)
     }
+);
 
-
-
-
-}).addTo(testmap);
-
-
-
-
-
-
-
-
-
-// // geojson data acquired
-// // add marker using pointToLayer() function and add data to popup marker
-// L.geoJSON(sanFranAirport, {
-//     //turning each feature into a marker on map
-//     pointToLayer: function(feature, latlng) {
-//         console.log(feature);
-//         return L.marker(latlng)
-//         .bindPopup("<h2>" + feature.properties.name + "</h2> <hr> <h3>" + feature.properties.city + ", " +feature.properties.country)
-//     }
-// }).addTo(testmap);
-
-
-
-
-
-// tile layer method: street level edition
-// create tile layer that will be the map background
-let streets = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/navigation-preview-night-v2/tiles/{z}/{x}/{y}?access_token={accessToken}', { //map box styles api: street level tiles
+// tile layer method: toggled layered maps (street, dark) 
+let streets = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token={accessToken}', { //map box styles api: street level tiles
 
     attribution: 'Map data © <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery (c) <a href="https://www.mapbox.com/">Mapbox</a>',
     
@@ -79,8 +29,50 @@ let streets = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/navigation-pr
     accessToken: API_KEY
 });
 
-// Then add 'graymap' tile layer to the map.
-streets.addTo(testmap);
+
+let darkMap = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/{z}/{x}/{y}?access_token={accessToken}', { //map box styles api: street level tiles
+
+    attribution: 'Map data © <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery (c) <a href="https://www.mapbox.com/">Mapbox</a>',
+
+    maxZoom: 18, //from 0-18, zoomed 18x since street level view
+
+    accessToken: API_KEY
+
+});
+
+// holds both layers as baseMaps
+let baseMaps = {
+    "<span style='color: green'>Street</span>": streets,
+    "<span style='color: gray'>Dark Mode</span>": darkMap
+};
+
+// alternate way to create map box: zoom in LAX
+let testmap = L.map("leafmap", {
+    center: [30, 30],
+    zoom: 2,
+    layers: [streets]
+});
+
+// leaflet control layers to control layers on the map
+L.control.layers(baseMaps).addTo(testmap);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -123,7 +115,7 @@ streets.addTo(testmap);
 //     .bindPopup("<h2>" + city.city + ", " + city.state + "</h2> <hr> <h3>Population " + city.population.toLocaleString() + "</h3>")
 //     .addTo(testmap);
 
-// });
+// });add commit push/ branch delete to map geojson map
 
 
 
@@ -189,3 +181,72 @@ streets.addTo(testmap);
 //         dashArray: "20,20"
 //     }   
 // ).addTo(testmap);
+
+
+
+
+
+// Add GeoJSON data: SFO
+// let sanFranAirport =
+// {"type":"FeatureCollection","features":[{
+//     "type":"Feature",
+//     "properties":{
+//         "id":"3469",
+//         "name":"San Francisco International Airport",
+//         "city":"San Francisco",
+//         "country":"United States",
+//         "faa":"SFO",
+//         "icao":"KSFO",
+//         "alt":"13",
+//         "tz-offset":"-8",
+//         "dst":"A",
+//         "tz":"America/Los_Angeles"},
+//         "geometry":{
+//             "type":"Point",
+//             "coordinates":[-122.375,37.61899948120117]}}
+// ]};
+
+
+// // add popups for features using onEachFeature() function
+// L.geoJSON(sanFranAirport, {
+//     onEachFeature: function(feature, layer) {
+//         console.log(layer);
+//         layer.bindPopup("<h3> Airport Code: " + feature.properties.faa + "</h3> <hr> <h3> Airport Name: " + feature.properties.name + "</h3>");
+//     }
+
+
+
+
+// }).addTo(testmap);
+
+
+// // geojson data acquired
+// // add marker using pointToLayer() function and add data to popup marker
+// L.geoJSON(sanFranAirport, {
+//     //turning each feature into a marker on map
+//     pointToLayer: function(feature, latlng) {
+//         console.log(feature);
+//         return L.marker(latlng)
+//         .bindPopup("<h2>" + feature.properties.name + "</h2> <hr> <h3>" + feature.properties.city + ", " +feature.properties.country)
+//     }
+// }).addTo(testmap);
+
+
+
+
+//d3 json read with a .then promise
+//creating multiple popups with a function and d3 json read
+// d3.json(airportData).then(function(collect){
+    
+//     console.log(collect);
+
+//     //leaflet geojson() layer
+//     L.geoJson(collect, {
+//         pointToLayer: function(feature, props) { //pointToLayer() features and properties
+//                     console.log(feature);
+//                     return L.marker(props)
+//                     .bindPopup("<h3> Airport Code: " + feature.properties.faa + "</h3> <hr> <h3> Airport Name: " + feature.properties.name)
+//                 }
+//             }).addTo(testmap)
+
+// });
