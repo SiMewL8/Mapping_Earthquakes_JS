@@ -26,15 +26,15 @@ let streetLayer = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v
 
 // holds both layers as baseMaps
 let baseMaps = {
-    "<span style='color: silver'>Streets Mode</span>": streetLayer,
+    "<span style='color: black'>Streets Mode</span>": streetLayer,
     "<span style='color: green'>Satellite Mode</span>": satelliteLayer
 };
 
 // // alternate way to create map box
 let testmap = L.map("leafmap", {
-    center: [43.7, -70.3],
+    center: [43.7, -79.3],
     zoom: 11,
-    layers: [satelliteLayer]
+    layers: [streetLayer]
 });
 
 // leaflet control layers to control layers on the map
@@ -43,10 +43,20 @@ L.control.layers(baseMaps).addTo(testmap);
 //torronts neighborhood mapping
 
 //access raw json
-let torrontoMapping = "";
+let torrontoMapping = "https://raw.githubusercontent.com/SiMewL8/Mapping_Earthquakes_JS/Mapping_GeoJSON_Polygons/torontoNeighborhoods.json";
 
-
-
+d3.json(torrontoMapping).then(function(data) {
+    console.log(data);
+    L.geoJSON(data, {
+        color: "blue",
+        weight: 1,
+        fillColor: "yellow",
+        onEachFeature: (function(feature,layer) {
+            layer.bindPopup("<h3> Neighborhood: " + feature.properties.AREA_NAME + "</h3>")
+            })
+        }).addTo(testmap);
+    }
+);
 
         
 
