@@ -3,24 +3,8 @@
 // help confirmes whether logic file is being accessed
 console.log("working");
 
-// accessing airport geojson url
-let airportData = "https://raw.githubusercontent.com/SiMewL8/Mapping_Earthquakes_JS/Mapping_GeoJSON_Points/majorAirports.json";
-
-
-var airportPopups = d3.json(airportData).then(function(collect) {
-    console.log(collect);
-    L.geoJson(collect, {
-                pointToLayer: function(feature, props) { //pointToLayer() features and properties
-                            console.log(feature);
-                            return L.marker(props)
-                            .bindPopup("<h3> Airport Code: " + feature.properties.faa + "</h3> <hr> <h3> Airport Name: " + feature.properties.name)
-                        }
-                    }).addTo(testmap)
-    }
-);
-
-// tile layer method: toggled layered maps (street, dark) 
-let streets = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token={accessToken}', { //map box styles api: street level tiles
+// light and dark titlelayers
+let satelliteLayer = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v11/tiles/{z}/{x}/{y}?access_token={accessToken}', { //map box styles api: street level tiles
 
     attribution: 'Map data © <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery (c) <a href="https://www.mapbox.com/">Mapbox</a>',
     
@@ -30,7 +14,7 @@ let streets = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v11/t
 });
 
 
-let darkMap = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/{z}/{x}/{y}?access_token={accessToken}', { //map box styles api: street level tiles
+let darkLayer = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/{z}/{x}/{y}?access_token={accessToken}', { //map box styles api: street level tiles
 
     attribution: 'Map data © <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery (c) <a href="https://www.mapbox.com/">Mapbox</a>',
 
@@ -42,23 +26,41 @@ let darkMap = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/dark-v10/tile
 
 // holds both layers as baseMaps
 let baseMaps = {
-    "<span style='color: green'>Street</span>": streets,
-    "<span style='color: gray'>Dark Mode</span>": darkMap
+    "<span style='color: gray'>Dark Mode</span>": darkLayer,
+    "<span style='color: brown'>Satellite Mode</span>": satelliteLayer
 };
 
-// alternate way to create map box: zoom in LAX
+// // alternate way to create map box
 let testmap = L.map("leafmap", {
-    center: [30, 30],
+    center: [44.0, -80.0],
     zoom: 2,
-    layers: [streets]
+    layers: [darkLayer]
 });
 
 // leaflet control layers to control layers on the map
 L.control.layers(baseMaps).addTo(testmap);
 
 
+// airline routes in yellow with weight of 2
+// Each airline route has popup marker that shows airline code and destination
+// accessing airport geojson url
+var torrontoFlights = "https://raw.githubusercontent.com/SiMewL8/Mapping_Earthquakes_JS/Mapping_GeoJSON_Linestrings/torontoRoutes.json";
 
 
+//grabbing GeoJSON data
+d3.json(torrontoFlights).then(function(collect) {
+        console.log(collect);
+        L.geoJSON(collect, {
+            color: "yellow",
+            weight: 2,
+            onEachFeature: (function(feature, layer) {
+                layer.bindPopup("<h3> Airline: " + feature.properties.airline + "</h3> <hr> <h3> Destination: " +feature.properties.dst + "</h3>");
+            })})
+            .addTo(testmap);
+        });
+
+
+        
 
 
 
@@ -254,3 +256,54 @@ L.control.layers(baseMaps).addTo(testmap);
 
 
 
+// let airportData = "https://raw.githubusercontent.com/SiMewL8/Mapping_Earthquakes_JS/Mapping_GeoJSON_Points/majorAirports.json";
+
+
+// var airportPopups = d3.json(airportData).then(function(collect) {
+//     console.log(collect);
+//     L.geoJson(collect, {
+//                 pointToLayer: function(feature, props) { //pointToLayer() features and properties
+//                             console.log(feature);
+//                             return L.marker(props)
+//                             .bindPopup("<h3> Airport Code: " + feature.properties.faa + "</h3> <hr> <h3> Airport Name: " + feature.properties.name)
+//                         }
+//                     }).addTo(testmap)
+//     }
+// );
+
+// // tile layer method: toggled layered maps (street, dark) 
+// let streets = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token={accessToken}', { //map box styles api: street level tiles
+
+//     attribution: 'Map data © <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery (c) <a href="https://www.mapbox.com/">Mapbox</a>',
+    
+//     maxZoom: 18, //from 0-18, zoomed 18x since street level view
+    
+//     accessToken: API_KEY
+// });
+
+
+// let darkMap = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/{z}/{x}/{y}?access_token={accessToken}', { //map box styles api: street level tiles
+
+//     attribution: 'Map data © <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery (c) <a href="https://www.mapbox.com/">Mapbox</a>',
+
+//     maxZoom: 18, //from 0-18, zoomed 18x since street level view
+
+//     accessToken: API_KEY
+
+// });
+
+// // holds both layers as baseMaps
+// let baseMaps = {
+//     "<span style='color: green'>Street</span>": streets,
+//     "<span style='color: gray'>Dark Mode</span>": darkMap
+// };
+
+// // alternate way to create map box: zoom in LAX
+// let testmap = L.map("leafmap", {
+//     center: [30, 30],
+//     zoom: 2,
+//     layers: [streets]
+// });
+
+// // leaflet control layers to control layers on the map
+// L.control.layers(baseMaps).addTo(testmap);
