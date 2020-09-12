@@ -24,17 +24,41 @@ let streetLayer = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v
 
 });
 
-// holds both layers as baseMaps
+let lightLayer = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/{z}/{x}/{y}?access_token={accessToken}', { //map box styles api: street level tiles
+
+    attribution: 'Map data © <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery (c) <a href="https://www.mapbox.com/">Mapbox</a>',
+
+    maxZoom: 18, //from 0-18, zoomed 18x since street level view
+
+    accessToken: API_KEY
+
+});
+
+let darkLayer = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/{z}/{x}/{y}?access_token={accessToken}', { //map box styles api: street level tiles
+
+    attribution: 'Map data © <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery (c) <a href="https://www.mapbox.com/">Mapbox</a>',
+
+    maxZoom: 18, //from 0-18, zoomed 18x since street level view
+
+    accessToken: API_KEY
+
+});
+
+// holds mapbox layers as baseMaps
 let baseMaps = {
     "<span style='color: black'>Streets Mode</span>": streetLayer,
-    "<span style='color: green'>Satellite Mode</span>": satelliteLayer
+    "<span style='color: green'>Satellite Mode</span>": satelliteLayer,
+    "<span style='color:#EAE4D5;font-weight:bold'>Light Mode</span>": lightLayer,
+    "<span style='color:#796F54;font-weight:bold'>Dark Mode</span>": darkLayer
 };
 
 // overlay for earthqauke data shown in map
 let earthquakes = new L.layerGroup();
+let plateOverlay = new L.layerGroup();
 
 let overlay = {
-    Earthquakes: earthquakes
+    Earthquakes: earthquakes,
+    "<span style='color: #756bb1'>Plate Boundaries</span>": plateOverlay
 };
 
 // // alternate way to create map box
@@ -154,4 +178,25 @@ d3.json(eqmap).then(function(data) {
 
     earthquakes.addTo(testmap); //adds eq layer to map
         
+});
+
+//mapping plate boundaries
+
+var plateJSON = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json";
+
+
+d3.json(plateJSON).then(function(pltGeo){
+
+    L.geoJSON(pltGeo, {
+
+        weight: 5,
+        opacity: 1,
+        color: '#756bb1',
+        dashArray: '10',
+        fillOpacity: 0.7
+
+    }).addTo(plateOverlay);
+
+    plateOverlay.addTo(testmap);
+
 });
